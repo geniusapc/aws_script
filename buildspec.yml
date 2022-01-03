@@ -1,0 +1,21 @@
+version: 0.2
+env:
+  parameter-store:
+      BUCKETNAME: "/PROJECT/CLIENT/PROD/BUCKET_NAME"
+phases:
+  install:
+    runtime-versions:
+      nodejs: 14
+    commands:
+      - echo "installing yarn..."
+      - npm i -g yarn
+      - echo "installing dependencies..."
+      - yarn install
+  build:
+    commands:
+      - echo "Building Project `date`"
+      - yarn run build
+  post_build:
+    commands:
+      - echo "Updating files in s3 bucket..."
+      - aws s3 sync build/ s3://$BUCKETNAME --delete
